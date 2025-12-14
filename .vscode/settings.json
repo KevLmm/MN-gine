@@ -1,0 +1,10 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/core-4.4.7-c019a1fa4764ee97fd368dea49bc5.jar",
+        "lib/core-common-2.2.0-2212d240dfe1e8a7598ee117ccc316d.jar",
+        "lib/controlP5.jar"
+    ],
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic"
+}
+
