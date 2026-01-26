@@ -1,3 +1,6 @@
-public interface Updatable {
+package core;
 
+
+public interface Updatable {
+    void update(float deltaTime);
 }

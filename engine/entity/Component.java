@@ -1,3 +1,5 @@
-public abstract class Component {
+package entity;
 
+public abstract class Component {
+    protected Entity owner;
 }

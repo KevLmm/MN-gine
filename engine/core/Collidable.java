@@ -1,3 +1,5 @@
-public interface Collidable {
+package core;
 
+public interface Collidable {
+    Rectangle getBounds();
 }
