@@ -1,7 +1,7 @@
 package core;
-import rendering.Renderer;
 
-
-public interface Renderable extends Renderer{
-    void render(Renderer renderer);
+public interface Renderable {
+    void clear();
+    void drawRect(float x, float y, float width, float height);
+    
 }
