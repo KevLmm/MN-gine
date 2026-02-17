@@ -2,6 +2,8 @@ package core;
 import entity.Player;
 import processing.core.PApplet;
 import rendering.ShapeRenderer;
+import entity.Entity;
+import input.InputListener;
 
 public class GameMain extends PApplet {
 
@@ -25,6 +27,22 @@ public class GameMain extends PApplet {
         background(0);
         engine.update(1/60f);
         engine.render();
+    }
+
+    public void keyPressed(char key, int keyCode) {
+        for (Entity e : engine.getEntities()) {
+            if (e instanceof InputListener) {
+                ((InputListener) e).onKeyPressed(key, keyCode);
+            }
+        }
+    }
+
+    public void keyReleased(char key, int keyCode) {
+        for (Entity e : engine.getEntities()) {
+            if (e instanceof InputListener) {
+                ((InputListener) e).onKeyReleased(key, keyCode);
+            }
+        }
     }
 
 }
