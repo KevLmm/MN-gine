@@ -18,6 +18,8 @@ public class ShapeRenderer implements Renderable {
 
     @Override
     public void drawRect(float x, float y, float width, float height) {
+        applet.fill(255);
+        applet.noStroke();
         applet.rect(x, y, width, height);
     }
 }
