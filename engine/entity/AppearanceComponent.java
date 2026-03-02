@@ -1,6 +1,7 @@
 package entity;
 
 import core.Drawable;
+import core.Renderable;
 
 /**
  * How the entity is drawn. Use setDrawable() to plug in custom visuals
@@ -8,6 +9,7 @@ import core.Drawable;
  */
 public class AppearanceComponent extends Component {
     private Drawable drawable;
+    private Renderable r;
 
     public AppearanceComponent(Drawable drawable) {
         this.drawable = drawable;
@@ -20,5 +22,6 @@ public class AppearanceComponent extends Component {
     /** Replace with a custom Drawable to use your own sprite/visual. */
     public void setDrawable(Drawable drawable) {
         this.drawable = drawable;
+        
     }
 }

@@ -13,7 +13,7 @@ public class MovementSystem {
         if (t != null) {
             t.setX(t.getX() + t.getSpeedX() * dt);
             t.setY(t.getY() + t.getSpeedY() * dt);
-            t.setSpeed(200, 200);
+            t.setSpeed(400, 400);
             if (entity instanceof InputListener) {
                 ((InputListener) entity).onKeyPressed(key, keyCode);
                 ((InputListener) entity).onKeyReleased(key, keyCode);

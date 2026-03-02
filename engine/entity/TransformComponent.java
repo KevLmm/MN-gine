@@ -11,8 +11,8 @@ public class TransformComponent extends Component {
         this.y = y;
         this.width = width;
         this.height = height;
-        this.speedX = 5;
-        this.speedY = 5;
+        this.speedX = 10;
+        this.speedY = 10;
     }
 
     public float getX() { return x; }

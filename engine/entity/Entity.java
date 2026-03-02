@@ -9,6 +9,13 @@ import core.Interactable;
     // components to create own entities */
 public abstract class Entity implements Interactable{
 
+    private float x, y;
+
+    public Entity(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+
     private final List<Component> components = new ArrayList<>();
 
     public void addComponent(Component component) {

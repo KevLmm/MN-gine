@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="src" path="engine"/>
-    <classpathentry kind="src" path="demo"/>
-    <classpathentry kind="src" path="tests"/>
-    <classpathentry kind="lib" path="lib/core-4.4.7-c019a1fa4764ee97fd368dea49bc5.jar"/>
-    <classpathentry kind="lib" path="lib/core-common-2.2.0-2212d240dfe1e8a7598ee117ccc316d.jar"/>
-    <classpathentry kind="lib" path="lib/controlP5.jar"/>
-    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-    <classpathentry kind="output" path="bin"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21"/>
+	<classpathentry kind="src" path="engine"/>
+	<classpathentry kind="lib" path="c:/Users/limke/MN-gine/lib/core-4.4.7-c019a1fa4764ee97fd368dea49bc5.jar"/>
+	<classpathentry kind="lib" path="c:/Users/limke/MN-gine/lib/core-common-2.2.0-2212d240dfe1e8a7598ee117ccc316d.jar"/>
+	<classpathentry kind="lib" path="c:/Users/limke/MN-gine/lib/controlP5.jar"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>
-

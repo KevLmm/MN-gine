@@ -24,13 +24,16 @@ public class Player extends Entity implements InputListener {
 
     /** Create a player with custom drawable so others can "upload their own visuals and behaviors". */
     public Player(float x, float y, Drawable drawable) {
+        super(x, y);
         addComponent(new TransformComponent(x, y, DEFAULT_WIDTH, DEFAULT_HEIGHT));
         addComponent(new AppearanceComponent(drawable));
-        getTransform().setSpeed(200, 200);
+        getTransform().setSpeed(400, 400);
         this.x = x;
         this.y = y;
         
     }
+
+   
 
     public TransformComponent getTransform() {
         return getComponent(TransformComponent.class);
