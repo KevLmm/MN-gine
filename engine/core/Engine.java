@@ -25,6 +25,7 @@ public class Engine {
         for (Entity e : entities) {
             e.update(dt);
         }
+        collisionSystem.resolveEntityCollisions(entities);
         collisionSystem.resolveScreenBounds(entities, 0, 0, worldWidth, worldHeight);
     }
 

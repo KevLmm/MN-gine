@@ -1,8 +1,9 @@
 package entity;
 
 import rendering.CircleDrawable;
+import core.Collidable;
 
-public class InteractableEntity extends Entity {
+public class InteractableEntity extends Entity implements Collidable {
 
     public InteractableEntity(float x, float y) {
         super(x, y);

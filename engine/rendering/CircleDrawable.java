@@ -2,8 +2,9 @@ package rendering;
 
 import core.Drawable;
 import core.Renderable;
+import core.Collidable;
 
-public class CircleDrawable implements Drawable {
+public class CircleDrawable implements Drawable, Collidable {
     private int r, g, b;
     
     public CircleDrawable(int r, int g, int b) {

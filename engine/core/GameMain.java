@@ -33,9 +33,8 @@ public class GameMain extends PApplet {
         inputManager.bindKey(87, "MOVE_UP");     // W
         inputManager.bindKey(83, "MOVE_DOWN");   // S
         player.setInput(inputManager);
-
-        InteractableEntity interactableEntity = new InteractableEntity(200, 200);
-        engine.registerEntity(interactableEntity);
+        InteractableEntity circleEntity = new InteractableEntity(200, 200);
+        engine.registerEntity(circleEntity);
     }
 
     public void draw() {
