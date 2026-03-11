@@ -15,9 +15,6 @@ public class CircleDrawable implements Drawable, Collidable {
     
     @Override
     public void draw(Renderable renderer, float x, float y, float width, float height) {
-        if (renderer instanceof ShapeRenderer) {
-            ShapeRenderer sr = (ShapeRenderer) renderer;
-            sr.drawCircle(x, y, width, height, r, g, b);
-        }
+        renderer.drawCircle(x, y, width, height, r, g, b);
     }
 }

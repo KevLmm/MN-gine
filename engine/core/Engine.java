@@ -5,7 +5,6 @@ import entity.Entity;
 import entity.TransformComponent;
 import systems.CollisionSystem;
 import systems.InteractionSystem;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +43,6 @@ public class Engine {
     public void setRenderer(Renderable renderable) {
         this.renderable = renderable;
     }
-
     public List<Entity> getEntities() {
         return new ArrayList<>(entities);
     }
