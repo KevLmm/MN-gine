@@ -29,4 +29,14 @@ public class ShapeRenderer implements Renderable {
         applet.noStroke();
         applet.ellipse(x + width/2, y + height/2, width, height);
     }
+
+    @Override
+    public void drawSprite(String assetId, float x, float y, float w, float h, int frameIndex) {
+        throw new UnsupportedOperationException("ShapeRenderer does not support drawing sprites");
+    }
+
+    @Override
+    public void drawText(String text, float x, float y) {
+        throw new UnsupportedOperationException("ShapeRenderer does not support drawing text");
+    }
 }

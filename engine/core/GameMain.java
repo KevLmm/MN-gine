@@ -28,7 +28,7 @@ public class GameMain extends PApplet {
     }
     public void setup() {
         assetsManager = new AssetsManager(this);
-        assetsManager.loadSprite("knight", "engine/data/knight.png");
+        assetsManager.loadSprite("knight", "data/knight.png");
         engine = new Engine();
         engine.setRenderer(new SpriteRenderer(this, assetsManager));
         SpriteDrawable knightDrawable = new SpriteDrawable("knight");

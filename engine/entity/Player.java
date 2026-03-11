@@ -13,8 +13,8 @@ import input.InputManager;
  */
 public class Player extends Entity implements InputListener {
     private InputManager input;
-    public static final float DEFAULT_WIDTH = 40;
-    public static final float DEFAULT_HEIGHT = 60;
+    public static final float DEFAULT_WIDTH = 100;
+    public static final float DEFAULT_HEIGHT = 120;
     private float x, y;
     
 
