@@ -1,18 +1,21 @@
 package core;
 import entity.Player;
 import processing.core.PApplet;
-import rendering.ShapeRenderer;
+import rendering.SpriteRenderer;
 import entity.Entity;
 import input.InputListener;
 import input.InputManager;
 import entity.InteractableEntity;
+import assets.AssetsManager;
+import rendering.SpriteDrawable;
 
 
 public class GameMain extends PApplet {
 
-    Engine engine = new Engine();
-    Player player;
-    InputManager inputManager;
+    private Engine engine;
+    private AssetsManager assetsManager;
+    private Player player;
+    private InputManager inputManager;
 
     public static void main(String args[]) {
         
@@ -24,8 +27,12 @@ public class GameMain extends PApplet {
         size(600, 600);
     }
     public void setup() {
-        engine.setRenderer(new ShapeRenderer(this));
-        player = new Player(100, 100);
+        assetsManager = new AssetsManager(this);
+        assetsManager.loadSprite("knight", "data/knight.png");
+        engine = new Engine();
+        engine.setRenderer(new SpriteRenderer(this, assetsManager));
+        SpriteDrawable knightDrawable = new SpriteDrawable("knight");
+        player = new Player(100, 100, knightDrawable);
         engine.registerEntity(player);
         inputManager = new InputManager();
         inputManager.bindKey(65, "MOVE_LEFT");   // A
@@ -35,6 +42,8 @@ public class GameMain extends PApplet {
         player.setInput(inputManager);
         InteractableEntity circleEntity = new InteractableEntity(200, 200);
         engine.registerEntity(circleEntity);
+        
+        
     }
 
     public void draw() {

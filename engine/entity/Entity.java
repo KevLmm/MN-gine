@@ -10,6 +10,7 @@ import core.Interactable;
 public abstract class Entity implements Interactable{
 
     private float x, y;
+    private String entityId;
 
     public Entity(float x, float y) {
         this.x = x;
