@@ -8,6 +8,7 @@ import input.InputManager;
 import entity.InteractableEntity;
 import assets.AssetsManager;
 import rendering.SpriteDrawable;
+import rendering.TileMapRenderer;
 
 
 public class GameMain extends PApplet {
@@ -28,10 +29,13 @@ public class GameMain extends PApplet {
     }
     public void setup() {
         assetsManager = new AssetsManager(this);
+        assetsManager.loadTileMap("test", "data/test.tmx");
         assetsManager.loadSprite("knight", "data/knight.png");
         engine = new Engine();
         engine.setRenderer(new SpriteRenderer(this, assetsManager));
         SpriteDrawable knightDrawable = new SpriteDrawable("knight");
+        TileMapRenderer tileMapRenderer = new TileMapRenderer(new SpriteRenderer(this, assetsManager), new SpriteDrawable("test"), assetsManager.getTilemap("test"));
+        tileMapRenderer.render(tileMapRenderer.getTileMap());
         player = new Player(100, 100, knightDrawable);
         engine.registerEntity(player);
         inputManager = new InputManager();
