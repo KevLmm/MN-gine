@@ -1,11 +1,12 @@
 package entity;
+import processing.core.PImage;
 
 public class TileMap {
 
     private int width, height;
     private Tile[][] tiles;
     private int tileWidth, tileHeight;
-    
+    private PImage tileMapImage;
     public class Tile {
         public Tile(int x, int y, int tileWidth, int tileHeight) {
             this.x = x;
@@ -29,6 +30,8 @@ public class TileMap {
     public TileMap(int width, int height, int tileWidth, int tileHeight) {
         this.width = width;
         this.height = height;
+        this.tileWidth = tileWidth;
+        this.tileHeight = tileHeight;
         this.tiles = new Tile[width][height];
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
@@ -51,6 +54,21 @@ public class TileMap {
 
     public int getTileHeight() {
         return tileHeight;
+    }
+
+    /** Total map size in pixels (tiles × tile size). */
+    public int getPixelWidth() {
+        return width * tileWidth;
+    }
+
+    /** Total map size in pixels (tiles × tile size). */
+    public int getPixelHeight() {
+        return height * tileHeight;
+    }
+
+    public Tile isSolid(int x, int y) {
+        if (x < 0 || x >= width || y < 0 || y >= height) return null;
+        return tiles[x][y];
     }
 
 }

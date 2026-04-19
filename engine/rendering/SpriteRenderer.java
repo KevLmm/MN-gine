@@ -5,6 +5,7 @@ import processing.core.PApplet;
 import assets.AssetsManager;
 import processing.core.PImage;
 
+
 public class SpriteRenderer implements Renderable {
 
     private PApplet applet;
@@ -17,6 +18,8 @@ public class SpriteRenderer implements Renderable {
 
     public void clear() {
         applet.background(0);
+        
+        applet.imageMode(PApplet.CORNER);
     }
 
     @Override
@@ -48,5 +51,9 @@ public class SpriteRenderer implements Renderable {
     }
     public void setAssetsManager(AssetsManager assetsManager) {
         this.assetsManager = assetsManager;
+    }
+    @Override
+    public void drawImage(PImage image, float x, float y, float width, float height) {
+        applet.image(image, x, y, width, height);
     }
 }

@@ -5,5 +5,13 @@
 	<classpathentry kind="lib" path="lib/core-4.4.7-c019a1fa4764ee97fd368dea49bc5.jar"/>
 	<classpathentry kind="lib" path="lib/core-common-2.2.0-2212d240dfe1e8a7598ee117ccc316d.jar"/>
 	<classpathentry kind="lib" path="lib/controlP5.jar"/>
+	<classpathentry kind="lib" path="lib/jsyn-17.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/jlayer-1.0.1.4.jar"/>
+	<classpathentry kind="lib" path="lib/jorbis-0.0.17.4.jar"/>
+	<classpathentry kind="lib" path="lib/jportaudio.jar"/>
+	<classpathentry kind="lib" path="lib/mp3spi-1.9.5.4.jar"/>
+	<classpathentry kind="lib" path="lib/sound.jar"/>
+	<classpathentry kind="lib" path="lib/tritonus-share-0.3.7.4.jar"/>
+	<classpathentry kind="lib" path="lib/vorbisspi-1.0.3.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

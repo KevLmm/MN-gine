@@ -2,6 +2,7 @@ package rendering;
 
 import core.Renderable;
 import processing.core.PApplet;
+import processing.core.PImage;
 
 public class ShapeRenderer implements Renderable {
 
@@ -38,5 +39,9 @@ public class ShapeRenderer implements Renderable {
     @Override
     public void drawText(String text, float x, float y) {
         throw new UnsupportedOperationException("ShapeRenderer does not support drawing text");
+    }
+    @Override 
+    public void drawImage(PImage image, float x, float y, float width, float height) {
+        applet.image(image, x, y, width, height);
     }
 }

@@ -5,15 +5,18 @@ import entity.Entity;
 import entity.TransformComponent;
 import systems.CollisionSystem;
 import systems.InteractionSystem;
+import rendering.TileMapRenderer;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Engine {
 
     private Renderable renderable;
+    private TileMapRenderer tileMapRenderer;
     private final List<Entity> entities = new ArrayList<>();
     private final InteractionSystem interactionSystem = new InteractionSystem();
     private final CollisionSystem collisionSystem = new CollisionSystem();
+    /** Max gap between hitbox edges for {@link systems.InteractionSystem} (see there for metric). */
     private static final float INTERACT_RANGE = 60f;
 
     public void registerEntity(Entity entity) {
@@ -28,9 +31,17 @@ public class Engine {
         collisionSystem.resolveScreenBounds(entities, 0, 0, worldWidth, worldHeight);
     }
 
+    public void setTileMapRenderer(TileMapRenderer tileMapRenderer) {
+        this.tileMapRenderer = tileMapRenderer;
+    }
+
     public void render() {
         if (renderable == null) return;
         renderable.clear();
+        if (tileMapRenderer != null) {
+            tileMapRenderer.render(tileMapRenderer.getTileMap());
+        }
+
         for (Entity e : entities) {
             TransformComponent t = e.getComponent(TransformComponent.class);
             AppearanceComponent a = e.getComponent(AppearanceComponent.class);

@@ -1,7 +1,5 @@
 package entity;
 
-import javax.xml.crypto.dsig.Transform;
-
 import core.Drawable;
 import rendering.DefaultDrawable;
 import input.InputListener;
@@ -22,7 +20,7 @@ public class Player extends Entity implements InputListener {
         this(x, y, new DefaultDrawable());
     }
 
-    /** Create a player with custom drawable so others can "upload their own visuals and behaviors". */
+    /** Create a player with custom drawable so others can upload their own visuals and behaviors. */
     public Player(float x, float y, Drawable drawable) {
         super(x, y);
         addComponent(new TransformComponent(x, y, DEFAULT_WIDTH, DEFAULT_HEIGHT));
