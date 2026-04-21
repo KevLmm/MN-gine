@@ -39,4 +39,12 @@ public class TileMapRenderer {
     public TileMap getTileMap() {
         return tileMap;
     }
+
+    public void setTileMap(TileMap tileMap) {
+        this.tileMap = tileMap;
+    }
+
+    public void setTileMapImage(PImage tileMapImage) {
+        this.tileMapImage = tileMapImage;
+    }
 }

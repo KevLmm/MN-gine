@@ -10,7 +10,7 @@ public class BGMusic {
     private final String musicPath;
     private SoundFile soundFile;
     /** Linear amplitude 0 (silent) … 1 (full). Same as {@link SoundFile#amp(float)}. */
-    private float volume = 1f;
+    private float volume = .5f;
 
     public BGMusic(PApplet applet, String musicPath) {
         this.applet = applet;
