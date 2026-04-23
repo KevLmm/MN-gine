@@ -11,16 +11,16 @@ import entity.TileMap;
 import entity.TransformComponent;
 import assets.AssetsManager;
 import rendering.TileMapRenderer;
+import core.Camera2D;
 
 
 public class GameplayScene extends Scene {
 
-    private enum SpawnEdge { LEFT, RIGHT, TOP, BOTTOM }
+    
 
     private static final int INTERACT_KEY = 69; 
 
-    private static final int TEST_TO_BRIDGE_ROW = 8;
-    private static final int BRIDGE_TO_TEST_ROW = 8;
+
 
     private static final float EDGE_EPSILON = 2f;
 
@@ -31,6 +31,7 @@ public class GameplayScene extends Scene {
     private final AssetsManager assets;
     private final TileMapRenderer tileMapRenderer;
     private final SceneTransition transition;
+    private final Camera2D cam;
 
     private PApplet p;
     private boolean walkingSoundActive = false;
@@ -38,7 +39,7 @@ public class GameplayScene extends Scene {
 
     public GameplayScene(Engine engine, Player player, InputManager input, 
         SoundFX walkingSound, AssetsManager assets, TileMapRenderer tileMapRenderer, 
-        SceneTransition transition) {
+        SceneTransition transition, Camera2D cam) {
 
         this.engine = engine;
         this.player = player;
@@ -47,6 +48,7 @@ public class GameplayScene extends Scene {
         this.assets = assets;
         this.tileMapRenderer = tileMapRenderer;
         this.transition = transition;
+        this.cam = cam;
     }
 
     @Override
@@ -67,7 +69,15 @@ public class GameplayScene extends Scene {
     @Override 
     public void update(float dt) {
         if (p == null) return;
-        engine.update(dt, p.width, p.height);
+        TileMap map = tileMapRenderer.getTileMap();
+        float worldW = map != null ? map.getPixelWidth() : p.width;
+        float worldH = map != null ? map.getPixelHeight() : p.height;
+        
+        engine.update(dt, worldW, worldH);
+        
+        if (map != null && cam != null) {
+            cam.follow(player.getTransform(), p.width, p.height, map.getPixelWidth(), map.getPixelHeight());
+        }
         updateWalkingSound();
         checkEdgeMapTransition();
     }
@@ -100,32 +110,44 @@ public class GameplayScene extends Scene {
 
     private void checkEdgeMapTransition() {
         if (transition.isBlocking()) return;
-
+        if (mapChangeCooldownFrames > 0) {
+            mapChangeCooldownFrames--;
+            return;
+        }
         TileMap map = tileMapRenderer.getTileMap();
         TransformComponent t = player.getTransform();
+
         if (map == null || t == null) return;
 
         int tileW = map.getTileWidth();
         int tileH = map.getTileHeight();
-
         int centerTileX = (int) ((t.getX() + t.getWidth() * 0.5f) / tileW);
         int centerTileY = (int) ((t.getY() + t.getHeight() * 0.5f) / tileH);
-
         float left = t.getX();
         float right = t.getX() + t.getWidth();
+        float top = t.getY();
+        float bottom = t.getY() + t.getHeight();
 
-        if ("test".equals(currMapId)) {
-            boolean onRightEdge = right >= map.getPixelWidth() - EDGE_EPSILON;
-            boolean onGateTile = centerTileY == TEST_TO_BRIDGE_ROW;
-            if (onRightEdge && onGateTile) {
-                beginMapSwap("bridge", SpawnEdge.LEFT, centerTileY);
-            }
-        } else if ("bridge".equals(currMapId)) {
-            boolean onLeftEdge = left <= EDGE_EPSILON;
-            boolean onGateTile = centerTileY == BRIDGE_TO_TEST_ROW;
-            if (onLeftEdge && onGateTile) {
-                beginMapSwap("test", SpawnEdge.RIGHT, centerTileY);
-            }
+        for (MapExit exit : MAP_EXITS) {
+            if (!exit.fromMapId.equals(currMapId)) continue;
+            boolean edgeOk = switch (exit.fromEdge) {
+                case RIGHT -> right >= map.getPixelWidth() - EDGE_EPSILON;
+                case LEFT -> left <= EDGE_EPSILON;
+                case BOTTOM -> bottom >= map.getPixelHeight() - EDGE_EPSILON;
+                case TOP -> top <= EDGE_EPSILON;
+            };
+
+            if (!edgeOk) continue;
+            boolean gateOk = switch (exit.fromEdge) {
+                case LEFT, RIGHT -> centerTileY >= exit.gateStartTile && centerTileY <= exit.gateEndTile;
+                case TOP, BOTTOM -> centerTileX >= exit.gateStartTile && centerTileX <= exit.gateEndTile;
+            };
+
+            if (!gateOk) continue;
+            beginMapSwap(exit.toMapId, exit.spawnEdge, exit.spawnTileIndex);
+            mapChangeCooldownFrames = 15; // tune: ~0.25s at 60fps
+            return;
+
         }
     }
 
@@ -157,20 +179,28 @@ public class GameplayScene extends Scene {
 
         switch (spawnEdge) {
             case LEFT:
-                x = 1f;
+                x = tileW + 2f;
                 y = preservedTileIndex * tileH;
+                float maxY = mapPixelH - t.getHeight();
+                y = clamp(y, 0f, maxY);
                 break;
             case RIGHT:
-                x = mapPixelW - t.getWidth() - 1f;
+                x = mapPixelW - t.getWidth() - tileW - 2f;
                 y = preservedTileIndex * tileH;
+                maxY = mapPixelH - t.getHeight();
+                y = clamp(y, 0f, maxY);
                 break;
             case TOP:
-                y = 1f;
+                y = tileH + 1.5f;
                 x = preservedTileIndex * tileW;
+                float maxX = mapPixelW - t.getWidth();
+                x = clamp(x, 0f, maxX);
                 break;
             case BOTTOM:
-                y = mapPixelH - t.getHeight() - 1f;
+                y = mapPixelH - t.getHeight() - 1.5f;
                 x = preservedTileIndex * tileW;
+                maxX = mapPixelW - t.getWidth();
+                x = clamp(x, 0f, maxX);
                 break;
         }
 
@@ -205,5 +235,13 @@ public class GameplayScene extends Scene {
             walkingSoundActive = false;
         }
     }
+
+    private static final MapExit[] MAP_EXITS = {
+
+        new MapExit("test", SpawnEdge.RIGHT, 7, 9, "bridge", SpawnEdge.LEFT, 8),
+        new MapExit("bridge", SpawnEdge.LEFT, 7, 9, "test", SpawnEdge.RIGHT, 8),
+    };
+
+    private int mapChangeCooldownFrames = 0;
     
 }

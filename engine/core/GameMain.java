@@ -14,6 +14,7 @@ import music.BGMusic;
 import music.SoundFX;
 import scene.GameplayScene;
 import scene.SplashScene;
+import core.Camera2D;
 
 
 
@@ -29,6 +30,7 @@ public class GameMain extends PApplet {
     private final BGMusic bgMusic = new BGMusic(this, "bgmusic1.mp3");
     private final SoundFX walkingSound = new SoundFX(this, "walking.mp3");
     private SceneManager scenes;
+    private Camera2D cam;
 
 
 
@@ -48,10 +50,12 @@ public class GameMain extends PApplet {
         // Same resolver as tile sprites (handles cwd=bin vs project data/)
         assetsManager.loadSprite("_logo", "MDC.png");
         logo = assetsManager.getSprite("_logo");
-        assetsManager.loadTileMap("test", "data/mapexample.png", 16, 16, 32, 32);
-        assetsManager.loadTileMap("bridge", "data/Bridge.png", 16, 16, 32, 32 );
+        assetsManager.loadTileMap("test", "data/mapexample.png", 20, 20, 32, 32);
+        assetsManager.loadTileMap("bridge", "data/Bridge.png", 18, 20, 32, 32 );
         assetsManager.loadSprite("knight", "knight.png");
         SpriteRenderer spriteRenderer = new SpriteRenderer(this, assetsManager);
+        cam = new Camera2D();
+        spriteRenderer.setCamera(cam);
 
         engine = new Engine();
         engine.setRenderer(spriteRenderer);
@@ -74,7 +78,7 @@ public class GameMain extends PApplet {
         InteractableEntity circleEntity = new InteractableEntity(200, 200);
         engine.registerEntity(circleEntity);
 
-        GameplayScene gameplayScene = new GameplayScene(engine, player, inputManager, walkingSound, assetsManager, tileMapRenderer, transition);
+        GameplayScene gameplayScene = new GameplayScene(engine, player, inputManager, walkingSound, assetsManager, tileMapRenderer, transition, cam);
         scenes.start(new SplashScene(scenes, logo, bgMusic, gameplayScene));
     }
 
