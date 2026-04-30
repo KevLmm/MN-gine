@@ -45,7 +45,7 @@ public class CollisionSystem {
 
             for (int tx = tx0; tx <= tx1; tx++) {
                 for (int ty = ty0; ty <= ty1; ty++) {
-                    boolean solid = false;
+                    boolean solid = tileMap.isSolid(tx, ty);
                     if (!solid) {
                         continue;
                     }

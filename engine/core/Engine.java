@@ -28,6 +28,11 @@ public class Engine {
             e.update(dt);
         }
         collisionSystem.resolveEntityCollisions(entities);
+        
+        if (tileMapRenderer != null && tileMapRenderer.getTileMap() != null) {
+            collisionSystem.resolveTileMapCollisions(entities, tileMapRenderer.getTileMap());
+        }
+        
         collisionSystem.resolveScreenBounds(entities, 0, 0, worldWidth, worldHeight);
     }
 

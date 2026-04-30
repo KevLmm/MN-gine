@@ -238,8 +238,8 @@ public class GameplayScene extends Scene {
 
     private static final MapExit[] MAP_EXITS = {
 
-        new MapExit("test", SpawnEdge.RIGHT, 7, 9, "bridge", SpawnEdge.LEFT, 8),
-        new MapExit("bridge", SpawnEdge.LEFT, 7, 9, "test", SpawnEdge.RIGHT, 8),
+        new MapExit("test", SpawnEdge.RIGHT, 6, 11, "bridge", SpawnEdge.LEFT, 8),
+        new MapExit("bridge", SpawnEdge.LEFT, 6, 11, "test", SpawnEdge.RIGHT, 8),
     };
 
     private int mapChangeCooldownFrames = 0;
