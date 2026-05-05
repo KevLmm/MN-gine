@@ -5,14 +5,17 @@ import entity.Entity;
 import entity.TransformComponent;
 import systems.CollisionSystem;
 import systems.InteractionSystem;
+import systems.RenderSystem;
 import rendering.TileMapRenderer;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class Engine {
 
     private Renderable renderable;
     private TileMapRenderer tileMapRenderer;
+    private final RenderSystem renderSystem = new RenderSystem();
     private final List<Entity> entities = new ArrayList<>();
     private final InteractionSystem interactionSystem = new InteractionSystem();
     private final CollisionSystem collisionSystem = new CollisionSystem();
@@ -21,6 +24,10 @@ public class Engine {
 
     public void registerEntity(Entity entity) {
         entities.add(entity);
+    }
+
+    public boolean removeEntity(Entity entity) {
+        return entities.remove(entity);
     }
 
     public void update(float dt, float worldWidth, float worldHeight) {
@@ -41,19 +48,7 @@ public class Engine {
     }
 
     public void render() {
-        if (renderable == null) return;
-        renderable.clear();
-        if (tileMapRenderer != null) {
-            tileMapRenderer.render(tileMapRenderer.getTileMap());
-        }
-
-        for (Entity e : entities) {
-            TransformComponent t = e.getComponent(TransformComponent.class);
-            AppearanceComponent a = e.getComponent(AppearanceComponent.class);
-            if (t != null && a != null && a.getDrawable() != null) {
-                a.getDrawable().draw(renderable, t.getX(), t.getY(), t.getWidth(), t.getHeight());
-            }
-        }
+        renderSystem.render(renderable, tileMapRenderer, entities);
     }
 
     public void setRenderer(Renderable renderable) {

@@ -19,6 +19,10 @@ public class InputManager implements InputListener {
         return false;
     }
 
+    public void clearActions() {
+        pressedKeys.clear();
+    }
+
     @Override
     public void onKeyPressed(char key, int keyCode) {
         pressedKeys.add(keyCode);

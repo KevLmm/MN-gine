@@ -13,10 +13,10 @@ public class BGMusic {
      * User slider 0 (silent) … 1 (loudest). This is <em>not</em> passed straight to {@link SoundFile#amp(float)}
      * because linear {@code 0.5} still sounds very loud on hot-mastered tracks; see {@link #effectiveAmp()}.
      */
-    private float volume = .25f;
+    private float volume = .18f;
 
-    /** Max real amplitude when {@link #volume} is 1. Tune down if BGM still feels loud (try 0.12–0.25). */
-    private static final float MAX_AMP = 0.11f;
+    /** Max real amplitude when {@link #volume} is 1. Tune down if BGM still feels loud (try 0.06–0.12). */
+    private static final float MAX_AMP = 0.07f;
 
     public BGMusic(PApplet applet, String musicPath) {
         this.applet = applet;

@@ -89,4 +89,16 @@ public final class SceneManager {
         }
         
     }
+
+    public void mousePressed(float mx, float my) {
+        if (curr != null) {
+            curr.mousePressed(mx, my);
+        }
+    }
+
+    public void mouseReleased(float mx, float my) {
+        if (curr != null) {
+            curr.mouseReleased(mx, my);
+        }
+    }
 }

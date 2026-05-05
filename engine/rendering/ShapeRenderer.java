@@ -44,4 +44,9 @@ public class ShapeRenderer implements Renderable {
     public void drawImage(PImage image, float x, float y, float width, float height) {
         applet.image(image, x, y, width, height);
     }
+    @Override
+    public void drawSpriteRegion(String assetId, float dstX, float dstY, float dstW, float dstH, float srcX,
+                                 float srcY, float srcW, float srcH) {
+        throw new UnsupportedOperationException("ShapeRenderer does not support drawing sprite regions");
+    }
 }

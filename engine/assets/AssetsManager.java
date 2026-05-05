@@ -50,6 +50,26 @@ public class AssetsManager {
         }
     }
 
+    /**
+     * Loads a raster tile map: grid size is {@code floor(imageW / tileWidth)} ×
+     * {@code floor(imageH / tileHeight)} from the loaded image.
+     */
+    public void loadTileMapFromRasterGrid(String assetId, String path, int tileWidth, int tileHeight) {
+        loadSprite(assetId, path);
+        PImage img = getSprite(assetId);
+        if (!isUsableImage(img)) {
+            tilemapPaths.put(assetId, path);
+            initTileMap(assetId, 1, 1, tileWidth, tileHeight);
+            return;
+        }
+        int pw = img.pixelWidth > 0 ? img.pixelWidth : img.width;
+        int ph = img.pixelHeight > 0 ? img.pixelHeight : img.height;
+        int tilesWide = Math.max(1, pw / tileWidth);
+        int tilesHigh = Math.max(1, ph / tileHeight);
+        tilemapPaths.put(assetId, path);
+        initTileMap(assetId, tilesWide, tilesHigh, tileWidth, tileHeight);
+    }
+
     private static boolean isRasterImagePath(String path) {
         String p = path.toLowerCase();
         return p.endsWith(".png") || p.endsWith(".jpg") || p.endsWith(".jpeg")
@@ -62,7 +82,51 @@ public class AssetsManager {
 
     public void loadSprite(String assetId, String path) {
         PImage sprite = loadImageAtPath(path);
+        if (!isUsableImage(sprite)) {
+            Path expected = Paths.get(System.getProperty("user.dir", ".")).resolve("data").resolve(baseFileName(path)).normalize();
+            System.err.println("[AssetsManager] FAILED to load \"" + assetId + "\" from \"" + path + "\".");
+            System.err.println("  expects file at: " + expected.toAbsolutePath() + " exists=" + Files.isRegularFile(expected));
+            System.err.println("  cwd=" + System.getProperty("user.dir"));
+            if (applet != null) {
+                try {
+                    System.err.println("  sketchPath=" + applet.sketchPath(""));
+                } catch (Throwable t) {
+                    System.err.println("  sketchPath=(unavailable)");
+                }
+            }
+            System.err.println("  Rebuild/run from MN-gine root, or -Dmn.gine.data=<full path to data folder>");
+        }
         sprites.put(assetId, sprite);
+    }
+
+    /** Register an in-memory image (e.g. pre-cut animation frames). */
+    public void putSprite(String assetId, PImage sprite) {
+        if (assetId != null) {
+            sprites.put(assetId, sprite);
+        }
+    }
+
+    /**
+     * Copies a pixel rectangle into an ARGB image created with {@link PApplet#createImage(int, int, int)}.
+     * Plain {@code new PImage} slices often fail to show in {@code image()} on some Processing setups.
+     */
+    public PImage copyImageRegion(PImage src, int sx, int sy, int sw, int sh) {
+        if (src == null || sw <= 0 || sh <= 0 || !isUsableImage(src) || applet == null) {
+            return null;
+        }
+        src.loadPixels();
+        int pw = src.pixelWidth;
+        int ph = src.pixelHeight;
+        if (sx < 0 || sy < 0 || sx + sw > pw || sy + sh > ph) {
+            return null;
+        }
+        PImage out = applet.createImage(sw, sh, PConstants.ARGB);
+        out.loadPixels();
+        for (int j = 0; j < sh; j++) {
+            System.arraycopy(src.pixels, (sy + j) * pw + sx, out.pixels, j * sw, sw);
+        }
+        out.updatePixels();
+        return out;
     }
 
     /**
@@ -78,35 +142,87 @@ public class AssetsManager {
             return null;
         }
         String base = baseFileName(path);
+        // Optional override: -Dmn.gine.data=C:\full\path\to\MN-gine\data
+        String overrideData = System.getProperty("mn.gine.data");
+        if (overrideData != null && !overrideData.isEmpty()) {
+            PImage imgO = tryLoadPImageFromFile(Paths.get(overrideData).resolve(base));
+            if (isUsableImage(imgO)) {
+                return imgO;
+            }
+        }
+        // Relative path under data/ (keep subdirs if path was like "sub/tile.png")
+        String underData = path.replace('\\', '/');
+        if (!underData.startsWith("data/") && !underData.startsWith("/")) {
+            underData = "data/" + base;
+        }
+
+        PImage img = null;
+        if (applet != null) {
+            // Processing sketch root — often correct when launch working directory = project (MN-gine)
+            img = tryLoadPImageFromPathString(applet.sketchPath(underData));
+            if (isUsableImage(img)) {
+                return img;
+            }
+            img = tryLoadPImageFromPathString(applet.sketchPath(path.replace('\\', '/')));
+            if (isUsableImage(img)) {
+                return img;
+            }
+            // dataPath("foo.png") → <sketch>/data/foo.png
+            try {
+                img = tryLoadPImageFromPathString(applet.dataPath(base));
+                if (isUsableImage(img)) {
+                    return img;
+                }
+            } catch (Throwable ignored) {
+                // fall through
+            }
+        }
+
+        // Explicit project data/ next to JVM working directory (Eclipse default: MN-gine)
+        img = tryLoadPImageFromPathString(
+                Paths.get(System.getProperty("user.dir", ".")).resolve("data").resolve(base).toString());
+        if (isUsableImage(img)) {
+            return img;
+        }
+
         for (Path file : candidateDataFiles(base)) {
-            PImage img = tryLoadPImageFromFile(file);
+            img = tryLoadPImageFromFile(file);
             if (isUsableImage(img)) {
                 return img;
             }
         }
         try {
-            Path dataPathFile = Paths.get(applet.dataPath(base));
-            PImage img = tryLoadPImageFromFile(dataPathFile);
-            if (isUsableImage(img)) {
-                return img;
+            if (applet != null) {
+                Path dataPathFile = Paths.get(applet.dataPath(base));
+                img = tryLoadPImageFromFile(dataPathFile);
+                if (isUsableImage(img)) {
+                    return img;
+                }
             }
         } catch (Exception ignored) {
             // fall through
         }
-        PImage img = tryLoadPImageFromPathString(applet.dataPath(base));
-        if (isUsableImage(img)) {
-            return img;
-        }
-        img = tryLoadPImageFromPathString(path);
-        if (isUsableImage(img)) {
-            return img;
-        }
-        img = tryLoadPImageFromPathString(applet.sketchPath(path));
-        if (isUsableImage(img)) {
-            return img;
-        }
-        if (!path.equals(base)) {
-            img = tryLoadPImageFromPathString(applet.sketchPath(base));
+        if (applet != null) {
+            img = tryLoadPImageFromPathString(applet.dataPath(base));
+            if (isUsableImage(img)) {
+                return img;
+            }
+            img = tryLoadPImageFromPathString(path);
+            if (isUsableImage(img)) {
+                return img;
+            }
+            img = tryLoadPImageFromPathString(applet.sketchPath(path));
+            if (isUsableImage(img)) {
+                return img;
+            }
+            if (!path.equals(base)) {
+                img = tryLoadPImageFromPathString(applet.sketchPath(base));
+                if (isUsableImage(img)) {
+                    return img;
+                }
+            }
+        } else {
+            img = tryLoadPImageFromPathString(path);
             if (isUsableImage(img)) {
                 return img;
             }
@@ -123,20 +239,23 @@ public class AssetsManager {
             return null;
         }
         try {
-            Path p = Paths.get(pathStr);
+            Path p = Paths.get(pathStr).normalize();
             if (Files.isRegularFile(p)) {
                 return tryLoadPImageFromFile(p);
             }
         } catch (Exception ignored) {
             // fall through
         }
-        try {
-            PImage img = applet.loadImage(pathStr);
-            if (isUsableImage(img)) {
-                return img;
+        if (applet != null) {
+            try {
+                PImage img = applet.loadImage(pathStr);
+                touchPixels(img);
+                if (isUsableImage(img)) {
+                    return img;
+                }
+            } catch (RuntimeException ignored) {
+                // fall through
             }
-        } catch (RuntimeException ignored) {
-            // fall through
         }
         return null;
     }
@@ -145,23 +264,43 @@ public class AssetsManager {
         if (!Files.isRegularFile(file)) {
             return null;
         }
-        String abs = file.toAbsolutePath().toString();
-        try {
-            PImage img = applet.loadImage(abs);
-            if (isUsableImage(img)) {
-                return img;
-            }
-        } catch (RuntimeException ignored) {
-            // try ImageIO
-        }
+        // Prefer ImageIO: some PNGs decode here when Processing's native loader returns width/height 0.
         try (InputStream in = Files.newInputStream(file)) {
             BufferedImage bi = ImageIO.read(in);
-            if (bi == null) {
-                return null;
+            if (bi != null) {
+                PImage out = bufferedImageToPImage(bi);
+                touchPixels(out);
+                if (isUsableImage(out)) {
+                    return out;
+                }
             }
-            return bufferedImageToPImage(bi);
         } catch (IOException ignored) {
-            return null;
+            // fall through
+        }
+        String abs = file.toAbsolutePath().toString();
+        if (applet != null) {
+            try {
+                PImage img = applet.loadImage(abs);
+                touchPixels(img);
+                if (isUsableImage(img)) {
+                    return img;
+                }
+            } catch (RuntimeException ignored) {
+                // empty
+            }
+        }
+        return null;
+    }
+
+    /** Ensures pixel buffer exists so {@link PImage#width}/{@link PImage#pixelWidth} are meaningful. */
+    private static void touchPixels(PImage img) {
+        if (img == null) {
+            return;
+        }
+        try {
+            img.loadPixels();
+        } catch (Throwable ignored) {
+            // ignore
         }
     }
 
@@ -200,6 +339,11 @@ public class AssetsManager {
         out.loadPixels();
         argb.getRGB(0, 0, w, h, out.pixels, 0, w);
         out.updatePixels();
+        // ImageIO path: some runtimes leave width/height at 0 until explicitly aligned with pixel buffer.
+        out.width = w;
+        out.height = h;
+        out.pixelWidth = w;
+        out.pixelHeight = h;
         return out;
     }
 
@@ -219,7 +363,12 @@ public class AssetsManager {
     }
 
     private static boolean isUsableImage(PImage img) {
-        return img != null && img.width > 0 && img.height > 0;
+        if (img == null) {
+            return false;
+        }
+        int w = img.pixelWidth > 0 ? img.pixelWidth : img.width;
+        int h = img.pixelHeight > 0 ? img.pixelHeight : img.height;
+        return w > 0 && h > 0;
     }
 
     private static String baseFileName(String path) {

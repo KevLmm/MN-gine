@@ -3,12 +3,12 @@ package scene;
 import processing.core.PApplet;
 
 /**
- * Full-screen fade between scenes. Reusable from any {@link PApplet}: drive {@link #update(float)}
- * from the main loop (same delta as your game), call {@link #render(PApplet)} after drawing the
- * current frame so the overlay sits on top.
+ * Full-screen fade between scenes. Drive {@link #update(float)} from the main loop with the same
+ * {@code dt} as simulation, then call {@link #render(PApplet)} after the current scene is drawn so
+ * the fade draws on top.
  * <p>
- * Typical order each frame: draw scene → {@link #render(PApplet)}. While {@link #isBlocking()},
- * you may skip gameplay updates if you want the world frozen during the fade.
+ * Each frame: render the active scene, then {@link #render(PApplet)}. While {@link #isBlocking()},
+ * gameplay updates can be skipped to keep the world frozen for the transition.
  */
 public final class SceneTransition {
 

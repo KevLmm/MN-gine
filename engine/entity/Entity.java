@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import core.Interactable;
 
-//* Base for all game objects. Composed of components; 
-    // systems query components to update and render. Subclass or add 
-    // components to create own entities */
-public abstract class Entity implements Interactable{
+/**
+ * Base type for game objects. Entities bundle {@link Component}s; systems query components for
+ * updates and rendering. Subclasses extend behavior or add components.
+ */
+public abstract class Entity implements Interactable {
 
     private float x, y;
-    private String entityId;
 
     public Entity(float x, float y) {
         this.x = x;
@@ -36,10 +36,22 @@ public abstract class Entity implements Interactable{
         return new ArrayList<>(components);
     }
 
-    /** Override in subclasses for per-frame logic. */
+    /**
+     * When true, this entity is drawn after others so large props do not cover the hero.
+     *
+     * @see systems.RenderSystem
+     */
+    public boolean shouldDrawAfterOthers() {
+        return false;
+    }
+
+    /** Called each frame; subclasses override for motion or logic. */
     public void update(float dt) {
     }
 
+    /**
+     * Default interaction pipeline. Most gameplay overrides {@link #onInteract()} only.
+     */
     @Override
     public void interact() {
         onInteract();
@@ -51,27 +63,22 @@ public abstract class Entity implements Interactable{
 
     @Override
     public void onInteract() {
-        System.out.println("Interacting with " + this.getClass().getName());
     }
 
     @Override
     public void onInteractEnd() {
-        System.out.println("Interact ended with " + this.getClass().getName());
     }
 
     @Override
     public void onInteractCancel() {
-        System.out.println("Interact canceled with " + this.getClass().getName());
     }
 
     @Override
     public void onInteractStart() {
-        System.out.println("Interact started with " + this.getClass().getName());
     }
 
     @Override
     public void onInteractUpdate() {
-        System.out.println("Interact updated with " + this.getClass().getName());
     }
 
 }

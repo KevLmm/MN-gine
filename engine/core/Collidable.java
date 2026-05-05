@@ -5,8 +5,8 @@ import entity.Entity;
 import entity.TransformComponent;
 
 /**
- * Solid objects in {@link systems.CollisionSystem}. Default hitbox matches {@link TransformComponent};
- * override {@link #getCollisionBounds(Entity)} for a tighter or offset hull vs. the drawn size.
+ * Collision volumes used by {@link systems.CollisionSystem}. The default hull matches the
+ * {@link TransformComponent}; overrides can shrink or shift the box relative to the sprite.
  */
 public interface Collidable {
 
@@ -16,5 +16,13 @@ public interface Collidable {
             return null;
         }
         return CollisionRect.fromTransform(t);
+    }
+
+    /**
+     * Hit area for {@link systems.InteractionSystem} only. Defaults to {@link #getCollisionBounds(Entity)}
+     * so behavior matches physics unless a type needs a larger or separate interact region.
+     */
+    default CollisionRect getInteractionBounds(Entity self) {
+        return getCollisionBounds(self);
     }
 }

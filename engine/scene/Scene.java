@@ -30,4 +30,10 @@ public abstract class Scene {
     public void keyReleased(char key, int keyCode) {
         
     }
+
+    public void mousePressed(float mx, float my) {
+    }
+
+    public void mouseReleased(float mx, float my) {
+    }
 }

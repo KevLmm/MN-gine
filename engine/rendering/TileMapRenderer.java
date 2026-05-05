@@ -19,9 +19,9 @@ public class TileMapRenderer {
     }
 
     /**
-     * Draws the map texture once, scaled to the map’s pixel size ({@link TileMap#getPixelWidth()} ×
-     * {@link TileMap#getPixelHeight()}). The image stretches to that rectangle (same as one full-screen
-     * map sheet, not one copy per tile).
+     * Draws the map texture once at world-space size ({@link TileMap#getPixelWidth()} ×
+     * {@link TileMap#getPixelHeight()}). The {@link core.Renderable} / camera apply zoom so a small
+     * world can fill the sketch (see {@link core.Camera2D#setZoom(float)}).
      */
     public void render(TileMap tileMap) {
         TileMap map = tileMap != null ? tileMap : this.tileMap;

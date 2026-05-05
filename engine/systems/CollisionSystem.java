@@ -3,24 +3,23 @@ package systems;
 import core.Collidable;
 import entity.CollisionRect;
 import entity.Entity;
+import entity.SpikeBallEntity;
 import entity.TileMap;
 import entity.TransformComponent;
 
 import java.util.List;
 
 /**
- * Runs after entities move. Three separate steps you can call in any order you want:
- * entity-vs-entity, tile grid, then keeping everyone inside the screen.
+ * Post-movement collision passes: entity-vs-entity, tile grid, then clamping to world bounds.
+ * Call order is flexible; {@link core.Engine} runs entity collisions, tiles, then screen bounds.
  */
 public class CollisionSystem {
 
     /**
-     * For each entity, finds which map tiles its box overlaps. For each solid tile, nudges the entity
-     * out the shortest way (same idea as entity collisions).
+     * For each entity, finds overlapping solid tiles and resolves penetration by the shortest axis.
+     * Which tiles count as solid comes from {@link entity.TileMap} flags in the inner loop.
      * <p>
-     * You still need to decide which tiles are solid (see the {@code solid} flag in the loop).
-     * <p>
-     * Common call order: {@code resolveEntityCollisions} → this → {@code resolveScreenBounds}.
+     * Typical sequence in {@link core.Engine}: {@code resolveEntityCollisions} → this → {@code resolveScreenBounds}.
      */
     public void resolveTileMapCollisions(List<Entity> entities, TileMap tileMap) {
         if (tileMap == null) {
@@ -31,12 +30,19 @@ public class CollisionSystem {
         int th = tileMap.getTileHeight();
 
         for (Entity e : entities) {
+            if (e instanceof SpikeBallEntity) {
+                continue;
+            }
             TransformComponent mover = e.getComponent(TransformComponent.class);
             if (mover == null) {
                 continue;
             }
 
-            float mx = mover.getX(), my = mover.getY(), mw = mover.getWidth(), mh = mover.getHeight();
+            CollisionRect moverHull = hullOf(e, mover);
+            float mx = moverHull.x;
+            float my = moverHull.y;
+            float mw = moverHull.width;
+            float mh = moverHull.height;
 
             int tx0 = (int) Math.floor(mx / tw);
             int ty0 = (int) Math.floor(my / th);
@@ -52,7 +58,7 @@ public class CollisionSystem {
 
                     float ox = tx * (float) tw;
                     float oy = ty * (float) th;
-                    CollisionRect moverHull = hullOf(e, mover);
+                    moverHull = hullOf(e, mover);
                     resolveOverlapHulls(mover, moverHull, ox, oy, (float) tw, (float) th);
                 }
             }
@@ -62,6 +68,9 @@ public class CollisionSystem {
     /** Keeps each entity's box fully inside the rectangle (left, top) to (right, bottom). */
     public void resolveScreenBounds(List<Entity> entities, float left, float top, float right, float bottom) {
         for (Entity e : entities) {
+            if (e instanceof SpikeBallEntity) {
+                continue;
+            }
             TransformComponent t = e.getComponent(TransformComponent.class);
             if (t == null) {
                 continue;
@@ -89,6 +98,9 @@ public class CollisionSystem {
      */
     public void resolveEntityCollisions(List<Entity> entities) {
         for (Entity mover : entities) {
+            if (mover instanceof SpikeBallEntity) {
+                continue;
+            }
             TransformComponent moverT = mover.getComponent(TransformComponent.class);
             if (moverT == null) {
                 continue;
@@ -114,7 +126,7 @@ public class CollisionSystem {
         }
     }
 
-    static CollisionRect hullOf(Entity e, TransformComponent t) {
+    public static CollisionRect hullOf(Entity e, TransformComponent t) {
         if (e instanceof Collidable c) {
             CollisionRect r = c.getCollisionBounds(e);
             if (r != null) {

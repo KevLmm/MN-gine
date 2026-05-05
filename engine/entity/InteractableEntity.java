@@ -1,11 +1,11 @@
 package entity;
 
 import core.Collidable;
-import rendering.CircleDrawable;
+import rendering.EmptyDrawable;
 
 /**
- * Solid interactable with a collision hull smaller than the visual {@link TransformComponent},
- * so the player can stand closer to the drawn circle while still blocking overlap.
+ * Solid interactable with a collision hull smaller than the {@link TransformComponent} size,
+ * centered on the transform. Uses {@link rendering.EmptyDrawable} by default (invisible hitbox).
  */
 public class InteractableEntity extends Entity implements Collidable {
 
@@ -27,7 +27,7 @@ public class InteractableEntity extends Entity implements Collidable {
         super(x, y);
         this.collisionHullScale = clampHullScale(collisionHullScale);
         addComponent(new TransformComponent(x, y, diameter, diameter));
-        addComponent(new AppearanceComponent(new CircleDrawable(255, 100, 0)));
+        addComponent(new AppearanceComponent(new EmptyDrawable()));
     }
 
     @Override
@@ -52,6 +52,5 @@ public class InteractableEntity extends Entity implements Collidable {
 
     @Override
     public void onInteract() {
-        System.out.println("You interacted with the orange circle!");
     }
 }

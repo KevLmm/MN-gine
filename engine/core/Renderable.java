@@ -8,4 +8,6 @@ public interface Renderable {
     void drawSprite(String assetId, float x, float y, float w, float h, int frameIndex);
     void drawText(String text, float x, float y);
     void drawImage(PImage image, float x, float y, float width, float height);
+    void drawSpriteRegion(String assetId, float dstX, float dstY, float dstW, float dstH, float srcX,
+                          float srcY, float srcW, float srcH);
 }

@@ -1,5 +1,6 @@
 package systems;
 
+import core.Collidable;
 import core.Interactable;
 import entity.CollisionRect;
 import entity.Entity;
@@ -10,11 +11,11 @@ import java.util.List;
 public class InteractionSystem {
 
     /**
-     * When the player presses interact near an entity, find the closest one in range
-     * and call {@link Interactable#onInteract()} on it.
+     * Resolves the interact action: among {@link Interactable} targets in range, picks the closest
+     * by edge separation and calls {@link Interactable#onInteract()}.
      * <p>
-     * {@code range} is the max <strong>gap between world-space hitbox edges</strong> (0 when boxes touch
-     * or overlap). Uses {@link Collidable#getCollisionBounds(Entity)} when the target is collidable.
+     * {@code range} caps the maximum gap between axis-aligned hull edges (zero when boxes touch or overlap).
+     * Targets that implement {@link Collidable} use {@link Collidable#getInteractionBounds(Entity)} when set.
      */
     public void tryInteract(Entity interactor, List<Entity> entities, float range) {
         TransformComponent interactorTransform = interactor.getComponent(TransformComponent.class);
@@ -39,7 +40,13 @@ public class InteractionSystem {
                 continue;
             }
 
-            CollisionRect targetBox = CollisionSystem.hullOf(e, t);
+            CollisionRect targetBox;
+            if (e instanceof Collidable c) {
+                CollisionRect ib = c.getInteractionBounds(e);
+                targetBox = ib != null ? ib : CollisionSystem.hullOf(e, t);
+            } else {
+                targetBox = CollisionRect.fromTransform(t);
+            }
             float sep = aabbEdgeSeparation(interactorBox, targetBox);
             if (sep <= range && sep < bestSeparation) {
                 bestSeparation = sep;
